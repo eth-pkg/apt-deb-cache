@@ -27,7 +27,7 @@ jobs:
 
     steps:
     - name: Cache and Install apt (.deb) Packages
-      uses: eth-pkg/apt-deb-cache@v0.2.1
+      uses: eth-pkg/apt-deb-cache@v0.2.2
       with:
         packages: 'curl git'
 

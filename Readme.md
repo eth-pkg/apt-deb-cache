@@ -11,7 +11,7 @@ This GitHub Action caches and installs .deb packages.
 ## Example Usage
 
 ```yaml
-name: Cache and Install DPKG Packages
+name: Cache and Install apt (.deb) Packages
 
 on:
   push:

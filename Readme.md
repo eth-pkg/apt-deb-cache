@@ -4,7 +4,7 @@ This GitHub Action caches and installs .deb packages.
 
 ## Inputs
 
-### `package-list`
+### `packages`
 
 **Required** A space-separated list of apt (.deb) packages to install.
 

@@ -1,0 +1,34 @@
+# Cache and Install apt (.deb) Packages
+
+This GitHub Action caches and installs .deb packages.
+
+## Inputs
+
+### `package-list`
+
+**Required** A space-separated list of apt (.deb) packages to install.
+
+## Example Usage
+
+```yaml
+name: Cache and Install DPKG Packages
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  install_packages:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Cache and Install apt (.deb) Packages
+      uses: eth-pkg/apt-deb-cache@latest
+      with:
+        package-list: 'curl git'
+
+```

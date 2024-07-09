@@ -1,0 +1,52 @@
+name: 'Cache and Install Apt (.deb) Packages'
+description: 'A GitHub Action to cache and install .deb packages'
+author: 'eth-pkg'
+inputs:
+  package-list:
+    description: 'A space-separated list of ackages to install'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Create deb-cache directory if not exists
+      run: mkdir -p ./deb-cache
+
+    - name: Get package versions
+      id: get-versions
+      run: |
+        PACKAGE_LIST="${{ inputs.package-list }}"
+        for package in $PACKAGE_LIST; do
+          version=$(apt-cache policy $package | grep Candidate | awk '{print $2}')
+          echo "$package=$version" >> package-versions.txt
+        done
+
+    - name: Set up cache for each package
+      id: cache-packages
+      uses: actions/cache@v3
+      with:
+        path: ./deb-cache
+        key: ${{ runner.os }}-deb-${{ hashFiles('package-versions.txt') }}-${{ runner.os }}-${{ runner.architecture }}
+        restore-keys: |
+          ${{ runner.os }}-deb-
+
+    - name: Download packages if not cached
+      run: |
+        PACKAGE_LIST="${{ inputs.package-list }}"
+        for package in $PACKAGE_LIST; do
+          version=$(grep "^$package=" package-versions.txt | cut -d '=' -f 2)
+          if [ ! -f ./deb-cache/$package-$version.deb ]; then
+            echo "Cache miss for $package=$version. Downloading..."
+            apt-get download $package=$version -y -qq --download-only -o=dir::cache=./deb-cache
+            mv ./deb-cache/$package*.deb ./deb-cache/$package-$version.deb
+          else
+            echo "Cache hit for $package=$version. Using cached package."
+          fi
+        done
+
+    - name: Install packages
+      run: |
+        sudo dpkg -i ./deb-cache/*.deb || sudo apt-get install -f -y
+

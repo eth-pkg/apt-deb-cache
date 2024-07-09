@@ -8,11 +8,8 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
     - name: Create deb-cache directory if not exists
-      run: mkdir -p ./deb-cache
+      run: mkdir -p .deb-cache
 
     - name: Get package versions
       id: get-versions
@@ -27,7 +24,7 @@ runs:
       id: cache-packages
       uses: actions/cache@v3
       with:
-        path: ./deb-cache
+        path: .deb-cache
         key: ${{ runner.os }}-deb-${{ hashFiles('package-versions.txt') }}-${{ runner.os }}-${{ runner.architecture }}
         restore-keys: |
           ${{ runner.os }}-deb-
@@ -37,10 +34,10 @@ runs:
         PACKAGE_LIST="${{ inputs.package-list }}"
         for package in $PACKAGE_LIST; do
           version=$(grep "^$package=" package-versions.txt | cut -d '=' -f 2)
-          if [ ! -f ./deb-cache/$package-$version.deb ]; then
+          if [ ! -f .deb-cache/$package-$version.deb ]; then
             echo "Cache miss for $package=$version. Downloading..."
-            apt-get download $package=$version -y -qq --download-only -o=dir::cache=./deb-cache
-            mv ./deb-cache/$package*.deb ./deb-cache/$package-$version.deb
+            apt-get download $package=$version -y -qq --download-only -o=dir::cache=.deb-cache
+            mv .deb-cache/$package*.deb .deb-cache/$package-$version.deb
           else
             echo "Cache hit for $package=$version. Using cached package."
           fi
@@ -48,5 +45,5 @@ runs:
 
     - name: Install packages
       run: |
-        sudo dpkg -i ./deb-cache/*.deb || sudo apt-get install -f -y
+        sudo dpkg -i .deb-cache/*.deb || sudo apt-get install -f -y
 

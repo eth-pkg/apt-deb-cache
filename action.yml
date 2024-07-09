@@ -28,12 +28,13 @@ runs:
       uses: actions/cache@v3
       with:
         path: ./deb-cache
-        key: ${{ runner.os }}-deb-${{ hashFiles('package-versions.txt') }}-${{ runner.os }}-${{ runner.architecture }}
+        key: ${{ runner.os }}-deb-${{ hashFiles('package-versions.txt') }}
         restore-keys: |
           ${{ runner.os }}-deb-
 
     - name: Download packages if not cached
       run: |
+        mkdir -p ./deb-cache
         cp package-versions.txt ./deb-cache 
         cp package-list.txt ./deb-cache 
         cd ./deb-cache

@@ -39,14 +39,15 @@ runs:
         cp package-list.txt ./deb-cache 
         cd ./deb-cache
         while IFS= read -r package; do
-          echo "package: $package"
-          version=$(grep "^$package=" package-versions.txt | cut -d '=' -f 2)
-          package_file=$(ls $package*.deb 2>/dev/null | head -n 1)
+          echo "Processing package: $package"
+          version=$(grep "^$package=" package-versions.txt | cut -d '=' -f 2 || true)
+          echo "Processing version: $version"
+          package_file=$(ls $package*.deb 2>/dev/null | head -n 1 || true)
 
           if [ -z "$package_file" ]; then
             echo "Cache miss for $package. Downloading version $version..."
             rm -f $package-*.deb
-            apt-get download $package=$version -y -qq --download-only 
+            apt-get download $package=$version -y -qq --download-only || echo "Failed to download $package version $version"
           else
             echo "Cache hit for $package. Assuming correct version."
           fi

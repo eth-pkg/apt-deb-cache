@@ -25,7 +25,7 @@ runs:
 
     - name: Set up cache for each package
       id: cache-packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ./deb-cache
         key: ${{ runner.os }}-deb-${{ hashFiles('package-versions.txt') }}

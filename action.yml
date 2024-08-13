@@ -56,6 +56,6 @@ runs:
 
     - name: Install packages
       run: |
-        sudo dpkg -i ./deb-cache/*.deb || sudo apt-get install -f -y
+        dpkg -i ./deb-cache/*.deb || sudo dpkg -i ./deb-cache/*.deb || apt-get install -f -y || sudo apt-get install -f -y
       shell: bash
 

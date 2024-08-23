@@ -47,7 +47,7 @@ runs:
           if [ -z "$package_file" ]; then
             echo "Cache miss for $package. Downloading version $version..."
             rm -f $package-*.deb
-            apt-get download $package=$version -y -qq --download-only || echo "Failed to download $package version $version"
+            DEBIAN_FRONTEND=noninteractive apt-get download $package=$version -y -qq --download-only || echo "Failed to download $package version $version"
           else
             echo "Cache hit for $package. Assuming correct version."
           fi
@@ -56,6 +56,7 @@ runs:
 
     - name: Install packages
       run: |
+        export DEBIAN_FRONTEND=noninteractive
         dpkg -i ./deb-cache/*.deb || sudo dpkg -i ./deb-cache/*.deb || apt-get install -f -y || sudo apt-get install -f -y
       shell: bash
 
